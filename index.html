@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freddy Fazbear's Pizza</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(80, 80, 80, 0.7); /* Gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-gif {
+            width: 150px; /* Medium size */
+            height: 150px;
+            border-radius: 10px;
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Rest of your existing CSS remains exactly the same */
+        /* Retro FNAF Color Variables */
+        :root {
+            --red: #8B0000;
+            --dark-red: #5a0000;
+            --yellow: #FFD700;
+            --gold: #daa520;
+            --white: #f5f5f5;
+            --black: #1a1a1a;
+            --gray: #333333;
+            --light-gray: #444444;
+            --tile-black: #0a0a0a;
+            --tile-white: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--black);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(139, 0, 0, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 20%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Header and Navigation */
+        header {
+            background: linear-gradient(to bottom, var(--black), rgba(0, 0, 0, 0.8));
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--red);
+        }
+        
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo-clock-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .digital-clock {
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #ff0000;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #8B0000;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+        
+        .clock-icon {
+            color: #FFD700;
+        }
+        
+        .logo-container {
+            position: relative;
+            width: 240px;
+            height: 140px;
+            overflow: visible;
+            transition: transform 0.5s ease;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+            cursor: pointer;
+        }
+        
+        .logo-container:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+        }
+        
+        .logo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: all 0.5s ease;
+        }
+        
+        .logo-container:hover .logo {
+            animation: logoGlow 2s infinite alternate;
+        }
+        
+        @keyframes logoGlow {
+            0% {
+                filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5));
+            }
+            100% {
+                filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.7)) 
+                        drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
+            }
+        }
+        
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            position: relative;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        nav a:hover {
+            color: var(--yellow);
+            background-color: rgba(139, 0, 0, 0.3);
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--yellow);
+            transition: width 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
+        /* Stylish Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.9rem 2rem;
+            background: linear-gradient(135deg, var(--red), var(--dark-red));
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.7);
+            color: var(--yellow);
+        }
+        
+        .btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-yellow {
+            background: linear-gradient(135deg, var(--yellow), var(--gold));
+            color: var(--black);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.5);
+            border: 1px solid rgba(139, 0, 0, 0.3);
+        }
+        
+        .btn-yellow:hover {
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.7);
+            color: var(--dark-red);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(139, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
+                linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)), 
+                url('https://media.indiedb.com/cache/images/games/1/67/66135/thumb_620x2000/Background_Flashlight.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--white);
+            padding: 8rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(0, 0, 0, 0.1) 50px,
+                    rgba(0, 0, 0, 0.1) 51px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 50px,
+                    rgba(0, 0, 0, 0.1) 50px,
+                    rgba(0, 0, 0, 0.1) 51px
+                );
+            opacity: 0.3;
+        }
+        
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+            color: var(--yellow);
+            position: relative;
+            animation: titleGlow 3s infinite alternate;
+            cursor: pointer;
+            transition: all 0.5s ease;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 3px;
+        }
+        
+        .hero h1:hover {
+            animation: hoverEffect 1.5s ease-in-out forwards;
+        }
+        
+        @keyframes titleGlow {
+            0% {
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.3);
+            }
+            100% {
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+            }
+        }
+        
+        @keyframes hoverEffect {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.3);
+            }
+            25% {
+                transform: scale(1.1) rotate(-2deg);
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 0 0 25px rgba(255, 0, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.5);
+            }
+            50% {
+                transform: scale(1.15) rotate(2deg);
+                text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 0, 0, 0.8), 0 0 50px rgba(255, 215, 0, 0.6);
+            }
+            75% {
+                transform: scale(1.1) rotate(-1deg);
+                text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 0 0 25px rgba(255, 0, 0, 0.7), 0 0 40px rgba(255, 215, 0, 0.5);
+            }
+            100% {
+                transform: scale(1.05);
+                text-shadow: 0 0 12px rgba(255, 215, 0, 0.9), 0 0 22px rgba(255, 0, 0, 0.6), 0 0 35px rgba(255, 215, 0, 0.4);
+            }
+        }
+        
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        /* Pages */
+        .page {
+            display: none;
+            padding: 3rem 0;
+            animation: pageFadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes pageFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--yellow);
+            font-size: 2.8rem;
+            position: relative;
+            text-shadow: 0 0 10px rgba(139, 0, 0, 0.5);
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(to right, var(--red), var(--yellow));
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        /* Menu Section with FNAF Tiles */
+        .menu-section {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.9)),
+                repeating-linear-gradient(
+                    0deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                ),
+                url('https://media.indiedb.com/cache/images/games/1/67/66135/thumb_620x2000/Background_Flashlight.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
+        }
+        
+        .menu-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 30px,
+                    rgba(0, 0, 0, 0.2) 30px,
+                    rgba(0, 0, 0, 0.2) 31px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 30px,
+                    rgba(0, 0, 0, 0.2) 30px,
+                    rgba(0, 0, 0, 0.2) 31px
+                );
+            pointer-events: none;
+        }
+        
+        .menu-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2.5rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .menu-item {
+            background: 
+                linear-gradient(135deg, rgba(10, 10, 10, 0.9) 0%, rgba(30, 30, 30, 0.9) 100%);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 2px solid var(--tile-white);
+            position: relative;
+        }
+        
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 1px solid var(--tile-black);
+            pointer-events: none;
+            border-radius: 12px;
+        }
+        
+        .menu-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(139, 0, 0, 0.5);
+            border-color: var(--yellow);
+        }
+        
+        .menu-item img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            border-bottom: 2px solid var(--tile-white);
+        }
+        
+        .menu-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        .menu-item-content {
+            padding: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .menu-item h3 {
+            color: var(--yellow);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .menu-item p {
+            color: #ccc;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        
+        .price {
+            font-weight: bold;
+            color: var(--yellow);
+            font-size: 1.4rem;
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.5);
+            display: block;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* About Us Section with FNAF Tiles */
+        .about-section {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.9)),
+                repeating-linear-gradient(
+                    0deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                );
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .about-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(139, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(255, 215, 0, 0.2) 0%, transparent 50%);
+            opacity: 0.5;
+        }
+        
+        .about-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background-color: rgba(10, 10, 10, 0.7);
+            padding: 3rem;
+            border-radius: 15px;
+            border: 2px solid var(--tile-white);
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.5);
+        }
+        
+        .about-content p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+        
+        .warning-note {
+            color: var(--yellow);
+            font-size: 1.1rem;
+            padding: 1.5rem;
+            border: 1px solid var(--yellow);
+            border-radius: 8px;
+            margin: 2rem 0;
+            background-color: rgba(139, 0, 0, 0.2);
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Image Slider */
+        .slider-container {
+            position: relative;
+            max-width: 1100px;
+            margin: 3rem auto;
+            overflow: hidden;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 3px solid var(--yellow);
+        }
+        
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+        
+        .slide {
+            min-width: 100%;
+            position: relative;
+        }
+        
+        .slide img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .slide-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+        
+        .slider-nav {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--gray);
+            border-radius: 50%;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .slider-dot.active {
+            background: var(--yellow);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        
+        .slider-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--white);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .slider-arrow:hover {
+            background: rgba(139, 0, 0, 0.7);
+            color: var(--yellow);
+        }
+        
+        .slider-arrow.prev {
+            left: 15px;
+        }
+        
+        .slider-arrow.next {
+            right: 15px;
+        }
+        
+        /* Restaurant Info */
+        .restaurant-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin: 3rem 0;
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.9) 0%, rgba(30, 30, 30, 0.9) 100%);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 2px solid var(--tile-white);
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(139, 0, 0, 0.5);
+            border-color: var(--yellow);
+        }
+        
+        .info-card i {
+            font-size: 3rem;
+            color: var(--yellow);
+            margin-bottom: 1.5rem;
+        }
+        
+        .info-card h3 {
+            color: var(--yellow);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        /* Shopping Cart Section */
+        .cart-section {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.9)),
+                repeating-linear-gradient(
+                    0deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                );
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cart-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: rgba(10, 10, 10, 0.8);
+            padding: 3rem;
+            border-radius: 15px;
+            border: 2px solid var(--tile-white);
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.5);
+        }
+        
+        .cart-items {
+            margin-bottom: 2.5rem;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        
+        .cart-item-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .cart-item-info img {
+            width: 100px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid var(--yellow);
+        }
+        
+        .cart-item-details h4 {
+            color: var(--yellow);
+            margin-bottom: 0.5rem;
+        }
+        
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .quantity-btn {
+            background: var(--dark-red);
+            color: var(--white);
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .quantity-btn:hover {
+            background: var(--red);
+            transform: scale(1.1);
+        }
+        
+        .quantity {
+            font-weight: bold;
+            color: var(--yellow);
+            min-width: 35px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .cart-total {
+            text-align: right;
+            font-size: 1.8rem;
+            color: var(--yellow);
+            margin-bottom: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .checkout-form {
+            background: rgba(20, 20, 20, 0.8);
+            padding: 2.5rem;
+            border-radius: 10px;
+            border: 1px solid var(--yellow);
+            margin-top: 2.5rem;
+        }
+        
+        .checkout-form h3 {
+            color: var(--yellow);
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--white);
+            font-size: 1.1rem;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid var(--tile-white);
+            border-radius: 5px;
+            color: var(--white);
+            font-size: 1rem;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--yellow);
+            box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .order-success {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(20, 20, 20, 0.9);
+            border-radius: 10px;
+            border: 2px solid var(--yellow);
+            margin-top: 2.5rem;
+            display: none;
+        }
+        
+        .order-success i {
+            font-size: 4rem;
+            color: var(--yellow);
+            margin-bottom: 1.5rem;
+        }
+        
+        .order-success h3 {
+            color: var(--yellow);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+        
+        /* Footer - Completely Redesigned */
+        footer {
+            background: 
+                linear-gradient(135deg, var(--dark-red) 0%, var(--black) 50%, var(--dark-red) 100%);
+            color: var(--white);
+            padding: 6rem 0 2rem;
+            border-top: 4px solid var(--yellow);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(to right, transparent, var(--yellow), var(--red), var(--yellow), transparent);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-section {
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.9), rgba(40, 40, 40, 0.8));
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 2px solid var(--yellow);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, var(--red), var(--yellow));
+        }
+        
+        .footer-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(139, 0, 0, 0.7);
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1.8rem;
+            position: relative;
+            padding-bottom: 0.8rem;
+            color: var(--yellow);
+            font-size: 1.5rem;
+            text-shadow: 0 0 8px rgba(139, 0, 0, 0.7);
+        }
+        
+        .footer-section h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, var(--yellow), var(--red));
+            border-radius: 2px;
+        }
+        
+        .footer-section p, .footer-section a {
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 1rem;
+            display: block;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 1.05rem;
+        }
+        
+        .footer-section a:hover {
+            color: var(--yellow);
+            transform: translateX(5px);
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .social-icons a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--gray), var(--dark-red));
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        }
+        
+        .social-icons a:hover {
+            background: linear-gradient(135deg, var(--red), var(--yellow));
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.5);
+            color: var(--black);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2.5rem;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            background-color: rgba(10, 10, 10, 0.8);
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .creator {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            color: var(--yellow);
+            text-shadow: 0 0 5px rgba(139, 0, 0, 0.7);
+            padding: 1rem;
+            background: rgba(10, 10, 10, 0.6);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            animation: creatorGlow 2s infinite alternate;
+        }
+        
+        @keyframes creatorGlow {
+            0% {
+                box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+                text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 15px rgba(255, 215, 0, 0.7), 0 0 25px rgba(255, 0, 0, 0.5);
+                text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 0, 0, 0.6);
+            }
+            100% {
+                box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+                text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+            }
+        }
+        
+        /* New Logo Section in Footer */
+        .footer-logo {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .footer-logo img {
+            max-width: 300px;
+            height: auto;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.7));
+            transition: all 0.5s ease;
+        }
+        
+        .footer-logo img:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.9));
+        }
+        
+        .logo-attribution {
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: rgba(20, 20, 20, 0.7);
+            border-radius: 5px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+        
+        /* New SOTM Logo in Footer */
+        .sotm-logo {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .sotm-logo img {
+            max-width: 200px;
+            height: auto;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+            transition: all 0.5s ease;
+        }
+        
+        .sotm-logo img:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.7));
+        }
+        
+        /* Locations Page */
+        .locations-section {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.9)),
+                repeating-linear-gradient(
+                    0deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                );
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .locations-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background-color: rgba(10, 10, 10, 0.7);
+            padding: 3rem;
+            border-radius: 15px;
+            border: 2px solid var(--tile-white);
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.5);
+        }
+        
+        .location-item {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.9) 0%, rgba(30, 30, 30, 0.9) 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid var(--tile-white);
+            margin-bottom: 2rem;
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .location-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(139, 0, 0, 0.5);
+            border-color: var(--yellow);
+        }
+        
+        .location-item h3 {
+            color: var(--yellow);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        /* Gallery Section with Image Comparison Slider */
+        .gallery-section {
+            background: 
+                linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.9)),
+                repeating-linear-gradient(
+                    0deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    var(--tile-black),
+                    var(--tile-black) 20px,
+                    var(--tile-white) 20px,
+                    var(--tile-white) 21px
+                );
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gallery-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            background-color: rgba(10, 10, 10, 0.7);
+            padding: 3rem;
+            border-radius: 15px;
+            border: 2px solid var(--tile-white);
+            box-shadow: 0 0 25px rgba(139, 0, 0, 0.5);
+        }
+        
+        .image-comparison {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 3rem auto;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            border: 3px solid var(--yellow);
+        }
+        
+        .image-comparison img {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .image-before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .image-before img {
+            width: 800px;
+            height: 500px;
+            object-fit: cover;
+        }
+        
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background-color: var(--yellow);
+            cursor: col-resize;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            z-index: 10;
+        }
+        
+        .slider-handle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background-color: var(--yellow);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.9);
+        }
+        
+        .slider-handle::after {
+            content: '↔';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--black);
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .image-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            color: var(--yellow);
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .logo-clock-container {
+                order: 1;
+                justify-content: center;
+                width: 100%;
+            }
+            
+            nav {
+                order: 2;
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .btn.btn-yellow {
+                order: 3;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .logo-container {
+                width: 200px;
+                height: 120px;
+            }
+            
+            .hero {
+                padding: 5rem 0;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .footer-section {
+                padding: 2rem;
+            }
+            
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .cart-item-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .slide img {
+                height: 300px;
+            }
+            
+            .digital-clock {
+                font-size: 1rem;
+                min-width: 120px;
+            }
+            
+            .image-comparison img {
+                height: 300px;
+            }
+            
+            .image-before img {
+                height: 300px;
+            }
+        }
+        
+        /* Special FNAF Effects */
+        .fnaf-ambience {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.05;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 0, 0.8) 0%, transparent 10%),
+                radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.6) 0%, transparent 10%),
+                radial-gradient(circle at 40% 40%, rgba(139, 0, 0, 0.7) 0%, transparent 15%);
+            animation: ambienceMove 20s infinite linear;
+        }
+        
+        @keyframes ambienceMove {
+            0% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(-5px, 5px);
+            }
+            50% {
+                transform: translate(5px, -5px);
+            }
+            75% {
+                transform: translate(-5px, -5px);
+            }
+            100% {
+                transform: translate(0, 0);
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <img src="https://static.wikia.nocookie.net/five-nights-at-freddys-world-world/images/d/dd/Fazbear.gif/revision/latest/thumbnail/width/360/height/360?cb=20160122223119" 
+                 alt="Loading Animation" class="loading-gif">
+            <p class="loading-text">Loading...</p>
+        </div>
+    </div>
+
+    <!-- FNAF Ambience Effect -->
+    <div class="fnaf-ambience"></div>
+    
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-clock-container">
+                    <div class="digital-clock" id="digitalClock">
+                        <i class="fas fa-clock clock-icon"></i>
+                        <span id="clockTime">00:00:00</span>
+                    </div>
+                    <div class="logo-container">
+                        <img src="https://static.wikia.nocookie.net/pizzaria-freddy-fazbear/images/9/94/FE_logo_FFPS.png/revision/latest?cb=20250329112156&path-prefix=pt-br" alt="Freddy Fazbear's Pizza" class="logo">
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" id="home-link"><i class="fas fa-home"></i> Home</a></li>
+                        <li><a href="#" id="menu-link"><i class="fas fa-pizza-slice"></i> Menu</a></li>
+                        <li><a href="#" id="about-link"><i class="fas fa-info-circle"></i> About Us</a></li>
+                        <li><a href="#" id="locations-link"><i class="fas fa-map-marker-alt"></i> Locations</a></li>
+                        <li><a href="#" id="gallery-link"><i class="fas fa-images"></i> Gallery</a></li>
+                        <li><a href="#" id="cart-link"><i class="fas fa-shopping-cart"></i> Cart</a></li>
+                    </ul>
+                    <a href="#" class="btn btn-yellow" id="order-link"><i class="fas fa-shopping-cart"></i> Order Online</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Home Page -->
+    <section class="page" id="home-page">
+        <div class="hero">
+            <div class="container">
+                <h1>FREDDY FAZBEAR'S PIZZA</h1>
+                <p>Delicious pizzas with unique flavors in a fun and friendly environment for the whole family. Serving you since 1983!</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn" id="view-menu-btn">View Menu</a>
+                    <a href="#" class="btn btn-yellow" id="locations-btn">Our Locations</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Page -->
+    <section class="page menu-section" id="menu-page">
+        <div class="container">
+            <h2 class="section-title">OUR PIZZA MENU</h2>
+            <div class="menu-items">
+                <!-- Item 1 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1604382355076-af4b0eb60143?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Pepperoni Pizza">
+                    <div class="menu-item-content">
+                        <h3>Special Pepperoni Pizza</h3>
+                        <p>Spicy pepperoni, mozzarella cheese, and homemade tomato sauce with a blend of Fazbear's secret spices!</p>
+                        <span class="price">$12.99</span>
+                        <a href="#" class="btn add-to-cart" data-id="1" data-name="Special Pepperoni Pizza" data-price="12.99" data-image="https://images.unsplash.com/photo-1604382355076-af4b0eb60143?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80">Add to Cart</a>
+                    </div>
+                </div>
+                
+                <!-- Item 2 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Mixed Pizza">
+                    <div class="menu-item-content">
+                        <h3>Fazbear's Mixed Pizza</h3>
+                        <p>Mushrooms, olives, bell peppers, pepperoni, and mozzarella cheese with Freddy's special sauce!</p>
+                        <span class="price">$14.99</span>
+                        <a href="#" class="btn add-to-cart" data-id="2" data-name="Fazbear's Mixed Pizza" data-price="14.99" data-image="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80">Add to Cart</a>
+                    </div>
+                </div>
+                
+                <!-- Item 3 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1595708684082-a173bb3a06c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Chicken Pizza">
+                    <div class="menu-item-content">
+                        <h3>BBQ Chicken Pizza</h3>
+                        <p>Grilled chicken, BBQ sauce, onions, and cheddar cheese with a smoky and delicious flavor!</p>
+                        <span class="price">$15.99</span>
+                        <a href="#" class="btn add-to-cart" data-id="3" data-name="BBQ Chicken Pizza" data-price="15.99" data-image="https://images.unsplash.com/photo-1595708684082-a173bb3a06c5?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80">Add to Cart</a>
+                    </div>
+                </div>
+                
+                <!-- Item 4 -->
+                <div class="menu-item">
+                    <img src="https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80" alt="Vegetable Pizza">
+                    <div class="menu-item-content">
+                        <h3>Fresh Vegetable Pizza</h3>
+                        <p>Mushrooms, bell peppers, tomatoes, olives, and cheese with fresh tomato sauce!</p>
+                        <span class="price">$13.99</span>
+                        <a href="#" class="btn add-to-cart" data-id="4" data-name="Fresh Vegetable Pizza" data-price="13.99" data-image="https://images.unsplash.com/photo-1571997478779-2adcbbe9ab2f?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80">Add to Cart</a>
+                    </div>
+                </div>
+                
+                <!-- Item 5 -->
+                <div class="menu-item">
+                    <img src="https://u-mercari-images.mercdn.net/photos/m82817801586_1.jpg?width=2560&quality=75&_=1756057438" alt="Freddy's Special Drink">
+                    <div class="menu-item-content">
+                        <h3>Freddy's Special Drink</h3>
+                        <p>A delicious and energizing drink with Freddy's special flavor!</p>
+                        <span class="price">$16.99</span>
+                        <a href="#" class="btn add-to-cart" data-id="5" data-name="Freddy's Special Drink" data-price="16.99" data-image="https://u-mercari-images.mercdn.net/photos/m82817801586_1.jpg?width=2560&quality=75&_=1756057438">Add to Cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Us Page -->
+    <section class="page about-section" id="about-page">
+        <div class="container">
+            <h2 class="section-title">ABOUT FREDDY FAZBEAR'S PIZZA</h2>
+            
+            <!-- Image Slider -->
+            <div class="slider-container">
+                <div class="slider">
+                    <div class="slide">
+                        <img src="https://lh6.googleusercontent.com/proxy/oKAiQ4bfik0gk0esN1CtVzAO7TK5l3YHkIiyt-iUwXRXv2WrZoa-ROcfuv7dAlkSuDpPq7u6CRd0GJ16k-83ow8n6s-9umOp0GaQ15MRvYtPv6LgSySfucHKfnEvTU7PqMRU4SgSZUpdyw" alt="Freddy Fazbear's Pizza Exterior">
+                        <div class="slide-caption">Our original location in Hurricane, Utah</div>
+                    </div>
+                    <div class="slide">
+                        <img src="https://preview.redd.it/the-classic-fake-real-life-pizzeria-is-near-where-i-live-v0-weoxg6tjq81b1.png?width=640&crop=smart&auto=webp&s=0e79d13dff7ce9708fdb8d1e882ecc333a1fbc0e" alt="Freddy Fazbear's Pizza Interior">
+                        <div class="slide-caption">The fun and friendly atmosphere inside our restaurant</div>
+                    </div>
+                    <div class="slide">
+                        <img src="https://www.mundoconectado.com.br/wp-content/uploads/2023/08/Cartaz-do-filme-Five-Nights-At-Freddys-%E2%80%93-O-Pesadelo-Sem-Fim.jpg" alt="Freddy Fazbear's Pizza Animatronics">
+                        <div class="slide-caption">Our famous animatronic band: Freddy, Bonnie, Chica, and Foxy</div>
+                    </div>
+                </div>
+                <button class="slider-arrow prev"><i class="fas fa-chevron-left"></i></button>
+                <button class="slider-arrow next"><i class="fas fa-chevron-right"></i></button>
+                <div class="slider-nav">
+                    <div class="slider-dot active"></div>
+                    <div class="slider-dot"></div>
+                    <div class="slider-dot"></div>
+                </div>
+            </div>
+            
+            <!-- About Content -->
+            <div class="about-content">
+                <p>
+                    Freddy Fazbear's Pizza started its operations in <strong>1983</strong> and has become one of the most popular chain restaurants by providing delicious pizzas and a fun environment for children and families.
+                </p>
+                <p>
+                    Our first location was established in <strong>Hurricane, Utah, USA</strong>, and we have since expanded to multiple locations across the United States and internationally.
+                </p>
+                <p>
+                    We use the freshest ingredients and unique recipes to prepare pizzas with an unparalleled taste that is delicious and enjoyable for all ages.
+                </p>
+                
+                <!-- Restaurant Info Cards -->
+                <div class="restaurant-info">
+                    <div class="info-card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <h3>Founded</h3>
+                        <p>1983</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h3>Headquarters</h3>
+                        <p>Hurricane, Utah, USA</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-utensils"></i>
+                        <h3>Specialty</h3>
+                        <p>Family Pizza & Entertainment</p>
+                    </div>
+                </div>
+                
+                <div class="warning-note">
+                    <i class="fas fa-exclamation-triangle"></i> Warning: Some of our animatronics may become active at night! Please do not remain in the restaurant after business hours.
+                </div>
+                
+                <a href="#" class="btn" id="back-to-home">Back to Home</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Locations Page -->
+    <section class="page locations-section" id="locations-page">
+        <div class="container">
+            <h2 class="section-title">OUR LOCATIONS</h2>
+            <div class="locations-content">
+                <p>
+                    Freddy Fazbear's Pizza has multiple locations across the United States and internationally.
+                </p>
+                
+                <div class="location-item">
+                    <h3>Hurricane, Utah</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 123 Fazbear Street, Hurricane, UT 84737</p>
+                    <p><i class="fas fa-phone"></i> (435) 123-4567</p>
+                    <p><i class="fas fa-clock"></i> Mon-Sun: 11:00 AM - 10:00 PM</p>
+                </div>
+                
+                <div class="location-item">
+                    <h3>New York City, New York</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 456 Pizza Avenue, New York, NY 10001</p>
+                    <p><i class="fas fa-phone"></i> (212) 987-6543</p>
+                    <p><i class="fas fa-clock"></i> Mon-Sun: 11:00 AM - 11:00 PM</p>
+                </div>
+                
+                <div class="location-item">
+                    <h3>Los Angeles, California</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> 789 Entertainment Blvd, Los Angeles, CA 90210</p>
+                    <p><i class="fas fa-phone"></i> (310) 555-7890</p>
+                    <p><i class="fas fa-clock"></i> Mon-Sun: 11:00 AM - 11:00 PM</p>
+                </div>
+                
+                <div class="warning-note">
+                    <i class="fas fa-exclamation-triangle"></i> Please note: Our animatronics are only active during business hours at select locations.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Page -->
+    <section class="page gallery-section" id="gallery-page">
+        <div class="container">
+            <h2 class="section-title">GALLERY</h2>
+            <div class="gallery-content">
+                <p>
+                    Explore the evolution of Freddy Fazbear's Pizza through our interactive image comparison.
+                </p>
+                
+                <div class="image-comparison">
+                    <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/30eebb1c-8221-4efc-a8af-c4f81488a14d/dgzc04i-6a14d471-f56d-46cf-9771-f186c9de8095.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi8zMGVlYmIxYy04MjIxLTRlZmMtYThhZi1jNGY4MTQ4OGExNGQvZGd6YzA0aS02YTE0ZDQ3MS1mNTZkLTQ2Y2YtOTc3MS1mMTg2YzlkZTgwOTUucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.obkp2krouzoW6bAPYAKOySDfH0a0AERLGd_YRhl7LwQ" alt="After Image" class="image-after">
+                    <div class="image-before">
+                        <img src="https://i.imgur.com/PeMQRE9.png" alt="Before Image">
+                    </div>
+                    <div class="slider-handle"></div>
+                </div>
+                
+                <div class="image-labels">
+                    <span>Before</span>
+                    <span>After</span>
+                </div>
+                
+                <p style="margin-top: 2rem;">
+                    Drag the yellow line left and right to compare the original design with the updated version of Freddy Fazbear's Pizza.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shopping Cart Page -->
+    <section class="page cart-section" id="cart-page">
+        <div class="container">
+            <h2 class="section-title">YOUR ORDER</h2>
+            <div class="cart-container">
+                <div class="cart-items" id="cart-items">
+                    <!-- Cart items will be added here dynamically -->
+                    <div class="empty-cart-message">
+                        <p>Your cart is empty. Add some delicious pizzas from our menu!</p>
+                    </div>
+                </div>
+                
+                <div class="cart-total" id="cart-total">
+                    Total: $0.00
+                </div>
+                
+                <div class="checkout-form" id="checkout-form">
+                    <h3>Complete Your Order</h3>
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" placeholder="Enter your first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" placeholder="Enter your last name">
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" placeholder="Enter your address">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="Enter your phone number">
+                    </div>
+                    <button class="btn btn-yellow" id="place-order-btn" style="width: 100%;">Place Order</button>
+                </div>
+                
+                <div class="order-success" id="order-success">
+                    <i class="fas fa-pizza-slice"></i>
+                    <img src="https://www.pngall.com/wp-content/uploads/14/FNAF-PNG-Image.png" alt="Freddy Fazbear" style="max-width: 150px; margin: 10px auto;">
+                    <h3>Thank You for Your Order!</h3>
+                    <p>Your pizza will be delivered to you soon!</p>
+                    <p>سریع به دست شما می‌رسد</p>
+                    <p>Enjoy your meal from Freddy Fazbear's Pizza!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <!-- New Logo Section -->
+            <div class="footer-logo">
+                <img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/cc2672ed-3c69-461c-9f44-7e36253f90e1/dfqacnr-274bb219-ebc2-4ba6-bb42-04cab57d3581.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiIvZi9jYzI2NzJlZC0zYzY5LTQ2MWMtOWY0NC03ZTM2MjUzZjkwZTEvZGZxYWNuci0yNzRiYjIxOS1lYmMyLTRiYTYtYmI0Mi0wNGNhYjU3ZDM1ODEucG5nIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmZpbGUuZG93bmxvYWQiXX0.RxgO4bSsGUrkp46NDInXHAevwIhTGvJq38_D1Aoig4E" alt="Freddy Fazbear's Pizza Logo">
+            </div>
+            
+            <!-- New SOTM Logo -->
+            <div class="sotm-logo">
+                <img src="https://static.wikia.nocookie.net/freddy-fazbears-pizza/images/5/53/FE_SOTM_logo.png/revision/latest?cb=20250615165843" alt="Freddy Fazbear's Pizza SOTM Logo">
+            </div>
+            
+            <div class="logo-attribution">
+                Freddy Fazbear's Pizza logos used with permission from Scott Cawthon
+            </div>
+            
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <p><i class="fas fa-phone"></i> Phone: 021-12345678</p>
+                    <p><i class="fas fa-envelope"></i> Email: info@fazbearpizza.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Address: Tehran, Valiasr St., No. 1234</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Working Hours</h3>
+                    <p>Saturday to Wednesday: 11 AM to 11 PM</p>
+                    <p>Thursday and Friday: 11 AM to 12 AM</p>
+                    <p>Official Holidays: 12 PM to 10 PM</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Useful Links</h3>
+                    <a href="#" class="footer-nav-link" data-page="home-page"><i class="fas fa-home"></i> Home</a>
+                    <a href="#" class="footer-nav-link" data-page="menu-page"><i class="fas fa-pizza-slice"></i> Menu</a>
+                    <a href="#" class="footer-nav-link" data-page="about-page"><i class="fas fa-info-circle"></i> About Us</a>
+                    <a href="#" class="footer-nav-link" data-page="locations-page"><i class="fas fa-map-marker-alt"></i> Locations</a>
+                    <a href="#" class="footer-nav-link" data-page="gallery-page"><i class="fas fa-images"></i> Gallery</a>
+                    <a href="#" class="footer-nav-link" data-page="cart-page"><i class="fas fa-shopping-cart"></i> Cart</a>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>All rights of this website belong to Freddy Fazbear's Pizza. © 2023</p>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem;">Any copying is legally pursued!</p>
+            </div>
+            
+            <div class="creator">
+                <p>Created by Kian Hassani Azami</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Hide loading overlay when page is fully loaded
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 2000); // Show for 2 seconds
+        });
+
+        // Show loading overlay during page transitions
+        function showPageWithLoading(pageId) {
+            // Show loading overlay
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            
+            // After a short delay, show the target page and hide loading
+            setTimeout(function() {
+                // Hide all pages
+                document.querySelectorAll('.page').forEach(page => {
+                    page.style.display = 'none';
+                });
+                
+                // Show selected page
+                const targetPage = document.getElementById(pageId);
+                targetPage.style.display = 'block';
+                
+                // Hide loading overlay
+                document.getElementById('loadingOverlay').classList.add('hidden');
+                
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }, 800); // Loading duration for page transitions
+        }
+
+        // تابع به‌روزرسانی ساعت
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('clockTime').textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // به‌روزرسانی اولیه و تنظیم تایمر برای به‌روزرسانی هر ثانیه
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Page Navigation with Loading Animation
+        function showPage(pageId) {
+            showPageWithLoading(pageId);
+        }
+        
+        // Set up navigation links
+        document.getElementById('home-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('home-page');
+        });
+        
+        document.getElementById('menu-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('menu-page');
+        });
+        
+        document.getElementById('about-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('about-page');
+        });
+        
+        document.getElementById('locations-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('locations-page');
+        });
+        
+        document.getElementById('gallery-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('gallery-page');
+        });
+        
+        document.getElementById('cart-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('cart-page');
+        });
+        
+        document.getElementById('order-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('menu-page');
+        });
+        
+        document.getElementById('view-menu-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('menu-page');
+        });
+        
+        document.getElementById('locations-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('locations-page');
+        });
+        
+        document.getElementById('back-to-home').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('home-page');
+        });
+        
+        // Footer navigation links
+        document.querySelectorAll('.footer-nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+        
+        // Logo click event to go to gallery page
+        document.querySelector('.logo-container').addEventListener('click', function(e) {
+            e.preventDefault();
+            showPage('gallery-page');
+        });
+        
+        // Show home page by default
+        showPage('home-page');
+        
+        // Shopping Cart Functionality
+        let cart = [];
+        
+        // Add to cart buttons
+        document.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const id = this.getAttribute('data-id');
+                const name = this.getAttribute('data-name');
+                const price = parseFloat(this.getAttribute('data-price'));
+                const image = this.getAttribute('data-image');
+                
+                // Check if item already in cart
+                const existingItem = cart.find(item => item.id === id);
+                
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        id,
+                        name,
+                        price,
+                        image,
+                        quantity: 1
+                    });
+                }
+                
+                updateCart();
+                
+                // Scroll to cart page
+                showPage('cart-page');
+            });
+        });
+        
+        // Update cart display
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartTotal = document.getElementById('cart-total');
+            
+            // Clear cart items
+            cartItems.innerHTML = '';
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '<div class="empty-cart-message"><p>Your cart is empty. Add some delicious pizzas from our menu!</p></div>';
+                cartTotal.textContent = 'Total: $0.00';
+                return;
+            }
+            
+            // Add each item to cart
+            let total = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div class="cart-item-info">
+                        <img src="${item.image}" alt="${item.name}">
+                        <div class="cart-item-details">
+                            <h4>${item.name}</h4>
+                            <p>$${item.price.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <div class="quantity-controls">
+                            <button class="quantity-btn decrease-btn" data-id="${item.id}">-</button>
+                            <span class="quantity">${item.quantity}</span>
+                            <button class="quantity-btn increase-btn" data-id="${item.id}">+</button>
+                        </div>
+                        <div class="item-total">$${itemTotal.toFixed(2)}</div>
+                        <button class="btn remove-btn" data-id="${item.id}">Remove</button>
+                    </div>
+                `;
+                
+                cartItems.appendChild(cartItem);
+            });
+            
+            // Update total
+            cartTotal.textContent = `Total: $${total.toFixed(2)}`;
+            
+            // Add event listeners to quantity buttons
+            document.querySelectorAll('.increase-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const item = cart.find(item => item.id === id);
+                    if (item) {
+                        item.quantity += 1;
+                        updateCart();
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.decrease-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const item = cart.find(item => item.id === id);
+                    if (item && item.quantity > 1) {
+                        item.quantity -= 1;
+                        updateCart();
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.remove-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    cart = cart.filter(item => item.id !== id);
+                    updateCart();
+                });
+            });
+        }
+        
+        // Place order button
+        document.getElementById('place-order-btn').addEventListener('click', function() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            
+            if (!firstName || !lastName || !address || !phone) {
+                alert('Please fill in all fields to place your order.');
+                return;
+            }
+            
+            if (cart.length === 0) {
+                alert('Your cart is empty. Please add some pizzas before placing an order.');
+                return;
+            }
+            
+            // Show success message
+            document.getElementById('checkout-form').style.display = 'none';
+            document.getElementById('order-success').style.display = 'block';
+            
+            // Clear cart
+            cart = [];
+            updateCart();
+        });
+        
+        // Initialize cart
+        updateCart();
+        
+        // Image Slider Functionality for About Page
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.slider-dot');
+        const totalSlides = slides.length;
+        
+        function showSlide(index) {
+            if (index >= totalSlides) currentSlide = 0;
+            else if (index < 0) currentSlide = totalSlides - 1;
+            else currentSlide = index;
+            
+            document.querySelector('.slider').style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            // Update active dot
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentSlide);
+            });
+        }
+        
+        // Next/Previous buttons
+        document.querySelector('.slider-arrow.next').addEventListener('click', () => {
+            showSlide(currentSlide + 1);
+        });
+        
+        document.querySelector('.slider-arrow.prev').addEventListener('click', () => {
+            showSlide(currentSlide - 1);
+        });
+        
+        // Dot navigation
+        dots.forEach((dot, i) => {
+            dot.addEventListener('click', () => {
+                showSlide(i);
+            });
+        });
+        
+        // Auto slide every 5 seconds
+        setInterval(() => {
+            showSlide(currentSlide + 1);
+        }, 5000);
+        
+        // Image Comparison Slider for Gallery Page
+        const imageComparison = document.querySelector('.image-comparison');
+        const imageBefore = document.querySelector('.image-before');
+        const sliderHandle = document.querySelector('.slider-handle');
+        
+        let isDragging = false;
+        
+        function startDrag(e) {
+            isDragging = true;
+            document.addEventListener('mousemove', onDrag);
+            document.addEventListener('touchmove', onDrag);
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+        }
+        
+        function onDrag(e) {
+            if (!isDragging) return;
+            
+            e.preventDefault();
+            const clientX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+            const containerRect = imageComparison.getBoundingClientRect();
+            let position = ((clientX - containerRect.left) / containerRect.width) * 100;
+            
+            // Keep position within bounds
+            position = Math.max(0, Math.min(100, position));
+            
+            // Update slider position and image width
+            imageBefore.style.width = `${position}%`;
+            sliderHandle.style.left = `${position}%`;
+        }
+        
+        function stopDrag() {
+            isDragging = false;
+            document.removeEventListener('mousemove', onDrag);
+            document.removeEventListener('touchmove', onDrag);
+            document.removeEventListener('mouseup', stopDrag);
+            document.removeEventListener('touchend', stopDrag);
+        }
+        
+        // Add event listeners for the slider
+        sliderHandle.addEventListener('mousedown', startDrag);
+        sliderHandle.addEventListener('touchstart', startDrag);
+        
+        // Also allow clicking anywhere on the image to move the slider
+        imageComparison.addEventListener('click', function(e) {
+            const containerRect = imageComparison.getBoundingClientRect();
+            const position = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+            
+            // Update slider position and image width
+            imageBefore.style.width = `${position}%`;
+            sliderHandle.style.left = `${position}%`;
+        });
+    </script>
+</body>
+</html>
